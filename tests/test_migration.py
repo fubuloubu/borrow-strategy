@@ -10,6 +10,7 @@ def test_migration(
     token,
     vault,
     strategy,
+    borrower,
     amount,
     LendingStrategy,
     strategist,
@@ -26,6 +27,7 @@ def test_migration(
 
     # migrate to a new strategy
     new_strategy = strategist.deploy(LendingStrategy, vault)
+    new_strategy.setBorrower(borrower, {"from": gov})
     vault.migrateStrategy(strategy, new_strategy, {"from": gov})
     assert (
         pytest.approx(new_strategy.estimatedTotalAssets(), rel=RELATIVE_APPROX)

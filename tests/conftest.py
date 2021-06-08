@@ -78,10 +78,17 @@ def vault(pm, gov, rewards, guardian, management, token):
 
 
 @pytest.fixture
-def strategy(strategist, keeper, vault, LendingStrategy, gov):
+def borrower(TestBorrowingStrategy, gov):
+    yield gov.deploy(TestBorrowingStrategy)
+
+
+@pytest.fixture
+def strategy(strategist, keeper, vault, borrower, LendingStrategy, gov):
     strategy = strategist.deploy(LendingStrategy, vault)
     strategy.setKeeper(keeper)
     vault.addStrategy(strategy, 10_000, 0, 2 ** 256 - 1, 1_000, {"from": gov})
+    strategy.setBorrower(borrower, {"from": gov})
+    borrower.setLender(strategy, {"from": gov})
     yield strategy
 
 
